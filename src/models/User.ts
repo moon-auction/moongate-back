@@ -1,17 +1,14 @@
-export default class User {
-    public id: number;
-    public name: string;
-    public email: string;
-    public password: string;
-  
-    constructor(id: number, name: string, email: string, password: string) {
-      this.id = id;
-      this.name = name;
-      this.email = email;
-      this.password = password;
-    }
+import { Schema, model } from "mongoose";
 
-    getWithCondition(condition: string) {
-        return `SELECT * FROM users WHERE ${condition}`;
-    }
-}
+const userSchema = new Schema({
+    email: {
+        type: String,
+        required: true,
+    },
+    password: {
+        type: String,
+        required: true,
+    },
+});
+
+export default model("User", userSchema);
