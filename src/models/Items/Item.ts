@@ -1,15 +1,27 @@
 import mongoose from "mongoose";
+import Enchant from "./Enchant";
 
 const itemSchema = new mongoose.Schema({
     category: Number,
-    prefix: String,
-    postfix: String,
+    prefix: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Enchant",
+        default: null,
+    },
+    postfix: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Enchant",
+        default: null,
+    },
     maxDam: Number,
     minDam: Number,
     minWound: Number,
     maxWound: Number,
     crit: Number,
     balance: Number,
+    range: Number,
+    piercing: Number,
+    currDurability: Number,
     durability: Number,
     upgrades: [
         
