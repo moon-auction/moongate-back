@@ -1,9 +1,13 @@
-import { Schema, model } from 'mongoose';
+import { Schema, model as Model } from 'mongoose';
 import bcrypt from 'bcrypt';
 
 
 const userSchema = new Schema({
-  name: String,
+  name: {
+    type: String,
+    required: true,
+    default: "",
+  },
   email: {
     type: String,
     required: true,
@@ -20,14 +24,35 @@ const userSchema = new Schema({
     required: true,
   },
   verifiedInfo: {
-    server: String,
-    character: String,
+    type: {
+      server: {
+        type: String,
+        required: true
+      },
+      character: {
+        type: String,
+        required: true
+      }
+    },
+    required: true
   },
-  role: String,
-  level: Number,
+  role: {
+    type: String,
+    required: true,
+    default: "user"
+  },
+  level: {
+    type: Number,
+    required: true,
+    default: 1
+  },
   createdAt: Date,
   updatedAt: Date,
-});
+}, {
+  methods: { comparePassword:
+    async function(candidatePassword: string): Promise<boolean> {
+      return await bcrypt.compare(candidatePassword, this.password);
+    }}});
 
 // Salt password
 userSchema.pre('save', function(next) {
@@ -49,6 +74,11 @@ userSchema.pre('save', function(next) {
       });
   });
 });
+
+userSchema.methods.comparePassword = async function(candidatePassword: string) {
+  return await bcrypt.compare(candidatePassword, this.password);
+};
+
 
 /*
   This is a schema for the confirm code
@@ -84,5 +114,5 @@ const confirmSchema = new Schema({
 });
 
 
-export const User = model('User', userSchema);
-export const Confirm = model('Confirm', confirmSchema);
+export const User = Model('User', userSchema);
+export const Confirm = Model('Confirm', confirmSchema);

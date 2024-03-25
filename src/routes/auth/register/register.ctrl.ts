@@ -1,10 +1,10 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response, NextFunction, RequestHandler } from "express";
 import { User, Confirm } from '../../../models/User';
 import cheerio  from 'cheerio';
 import iconv    from 'iconv-lite';
 import axios    from 'axios';
 
-export const getConfirmCode = async (req: Request, res: Response, next: NextFunction) => {
+export const getConfirmCode: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const min: number = 1000000;
         const max: number = 9999999;
@@ -27,7 +27,7 @@ export const getConfirmCode = async (req: Request, res: Response, next: NextFunc
     }
 }
 
-export const validateConfirmCode = async (req: Request, res: Response, next: NextFunction) => {
+export const validateConfirmCode: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const {code, url} = req.body;
 
@@ -83,7 +83,7 @@ export const validateConfirmCode = async (req: Request, res: Response, next: Nex
     }
 }
 
-export const confirmDelete = async (req: Request, res: Response, next: NextFunction) => {
+export const confirmDelete: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const {code} = req.body;
         
@@ -121,7 +121,7 @@ export const confirmDelete = async (req: Request, res: Response, next: NextFunct
     }
 }
 
-export const registerUser = async (req: Request, res: Response, next: NextFunction) => {
+export const registerUser: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const {email, password, confirm} = req.body;
 

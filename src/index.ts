@@ -3,12 +3,23 @@ import dotenv from 'dotenv';
 import routes from './routes';
 import cors from 'cors';
 import swaggerConfig from './config/swaggerConfig';
-
+import session from 'express-session';
+import MongoStore from 'connect-mongo';
 
 dotenv.config();
 
 const app = express();
 const db = require('./config/db');
+
+app.use(session({
+  secret: process.env.SECRETSESSION ? process.env.SECRETSESSION : 'moongate',
+  resave: false,
+  saveUninitialized: false,
+  cookie:{maxAge:(3.6e+6)*24},
+  store: MongoStore.create({
+    mongoUrl: process.env.MONGO_URI
+  })
+}));
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
