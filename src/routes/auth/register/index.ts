@@ -1,90 +1,24 @@
-import express from 'express';
-import axios from 'axios';
-import cheerio from 'cheerio';
-import iconv from 'iconv-lite';
+import { Router } from 'express';
 
-import { Confirm } from '../../../models/User';
+import {
+    getConfirmCode,
+    validateConfirmCode,
+    confirmDelete,
+    registerUser
+} from './register.ctrl';
 
-const router = express.Router();
+const router = Router();
 
-router.get('/confirm', async (req, res, next) => {
-    try {
-        const min = 1000000;
-        const max = 9999999;
-        var randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
-    
-        // TODO: post on db and check if it's already there
-        // if it's already there, then generate another number
-        var flag = false;
-        while (flag == false) {
-            console.log("flag")
-            console.log(await Confirm.findOne({code: randomNumber}));
-            flag = true;
+// 회원가입 요청 시에 확인코드 전달
+router.get('/confirm', getConfirmCode);
 
-                
-        }
+// 마비노기 공식 홈페이지에 확인코드 확인
+router.post('/confirm', validateConfirmCode);
 
-        Confirm.create({code: randomNumber, server: "", name: ""}, (err: Error, result: any) => {
-            if (err) {
-                console.log(err);
-                return res.status(500).send({message: 'Server Error'});
-            }
-        });
+// 마비노기 공식 홈페이지의 게시글 삭제 확인
+router.post('/confirm/delete', confirmDelete);
 
-        return res.send({code: randomNumber});
-    } catch (e) {
-        next(e);
-    }
-});
-
-router.post('/confirm', async (req, res, next) => {
-    try {
-        const {code, url} = req.body;
-
-        if (!code || !url) {
-            return res.status(400).send({message: 'Invalid request'});
-        }
-    
-        // Get Mabinogi Site Post
-        const response = await axios({
-            url: url,
-            method: 'GET',
-            responseType: 'arraybuffer'
-        }).then((response) => {
-            return iconv.decode(response.data, 'EUC-KR').toString();
-        });
-
-        const $ = cheerio.load(response);
-
-
-        // Get Data from it
-        var server = $('.btm_box').find('dl').find('dt').find('img').attr('src');
-        server = server?.split('/')[server?.split('/').length - 1];
-
-        const content = $('.view_cont').find('p').text();
-
-        const name = $('.btm_box').find('dl').find('dt').find('a').text();
-
-        // Icon to server info
-        if (server == "icon_l.png") {
-            server = "류트";
-        } else if (server == "icon_h.png") {
-            server = "하프";
-        } else if (server == "icon_m.png") {
-            server = "만돌린";
-        } else if (server == "icon_w.png") {
-            server = "울프";
-        }
-
-        return res.send({server, name, content});
-
-    } catch (e) {
-        next(e);
-    }
-});
-
-// get user info and confirm code
-// router.post('/', (req, res, next) => {
-//     try {)
+// 확인코드 검증 이후 회원가입
+router.post('/', registerUser);
 
 export default router;

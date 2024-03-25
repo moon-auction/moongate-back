@@ -3,9 +3,12 @@ import dotenv from 'dotenv';
 import routes from './routes';
 import cors from 'cors';
 import swaggerConfig from './config/swaggerConfig';
+
+
 dotenv.config();
 
 const app = express();
+const db = require('./config/db');
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
