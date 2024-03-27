@@ -1,10 +1,10 @@
 import { Router } from 'express';
-import register from './register';
-import login from './login';
+import Register from './register';
+import Login from './login';
 
 const router = Router();
 
-router.use('/register', register);
-router.use('/login', login);
+router.use('/register', Register);
+router.use('/login', Login);
 
 export default router;

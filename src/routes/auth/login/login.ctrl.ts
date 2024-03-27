@@ -5,7 +5,7 @@ export const login: RequestHandler = async (req: Request, res: Response, next: N
     try {
         const { email, password } = req.body;
 
-        const session = req.session;
+        var session = req.session;
 
         if (session!.isLogin) {
             return res.status(400).json({ message: 'Already logged in' });
@@ -22,9 +22,9 @@ export const login: RequestHandler = async (req: Request, res: Response, next: N
         if (!isMatch) {
             return res.status(401).json({ message: 'Password does not match' });
         } else {
-            
             session!.isLogin = true;
             session!.email = found.email;
+            session!._id = found._id.toString();
             session!.name = found.name;
             session!.verifiedInfo = found.verifiedInfo;
             session!.role = found.role;
@@ -35,6 +35,7 @@ export const login: RequestHandler = async (req: Request, res: Response, next: N
                 {
                     message: 'Login success',
                     user: {
+                        _id: session!._id,
                         email: session!.email,
                         name: session!.name,
                         verifiedInfo: session!.verifiedInfo,

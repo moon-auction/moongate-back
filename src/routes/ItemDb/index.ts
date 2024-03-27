@@ -8,22 +8,6 @@ router.use((req,res, next) => {
     next();
 });
 
-/**
- * @swagger
- * /api/users:
- *   post:
- *     summary: Returns a list of users.
- *     description: Optional extended description in Markdown.
- *     responses:
- *       200:
- *         description: A JSON array of user names
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 type: string
- */
 router.post('/add', (req, res, next) => {
     try {
         const {

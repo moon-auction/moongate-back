@@ -20,6 +20,11 @@ const commentSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'User',
     }],
+    deleted: {
+        type: Boolean,
+        required: true,
+        default: false,
+    },
     createdAt: Date,
     updatedAt: Date,
 });
@@ -53,6 +58,7 @@ const postSchema = new Schema({
         required: true,
         default: 0,
     },
+    deleted: Boolean,
     createdAt: Date,
     updatedAt: Date,
 });
