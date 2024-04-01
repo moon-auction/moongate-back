@@ -25,8 +25,8 @@ const commentSchema = new Schema({
         required: true,
         default: false,
     },
-    createdAt: Date,
-    updatedAt: Date,
+}, {
+    timestamps: true,
 });
 
 const postSchema = new Schema({
@@ -58,9 +58,13 @@ const postSchema = new Schema({
         required: true,
         default: 0,
     },
-    deleted: Boolean,
-    createdAt: Date,
-    updatedAt: Date,
+    deleted: {
+        type: Boolean,
+        required: true,
+        default: false,
+    },
+}, {
+    timestamps: true,
 });
 
 const postReportSchema = new Schema({
@@ -84,8 +88,8 @@ const postReportSchema = new Schema({
         required: true,
         default: "pending",
     },
-    createdAt: Date,
-    updatedAt: Date,
+}, {
+    timestamps: true,
 });
 
 const commentReportSchema = new Schema({
@@ -108,9 +112,9 @@ const commentReportSchema = new Schema({
         type: String,
         required: true,
         default: "pending",
-    },
-    createdAt: Date,
-    updatedAt: Date,
+    }
+}, {
+    timestamps: true,
 });
 
 export const Comment = Model('Comment', commentSchema);

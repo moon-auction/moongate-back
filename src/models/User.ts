@@ -44,15 +44,18 @@ const userSchema = new Schema({
   level: {
     type: Number,
     required: true,
-    default: 1
+    default: 1,
+    min: 1,
+    max: 255,
   },
-  createdAt: Date,
-  updatedAt: Date,
 }, {
-  methods: { comparePassword:
-    async function(candidatePassword: string): Promise<boolean> {
+  timestamps: true,
+  methods: { 
+    comparePassword: async function(candidatePassword: string): Promise<boolean> {
       return await bcrypt.compare(candidatePassword, this.password);
-    }}});
+    }
+  }
+});
 
 // Salt password
 userSchema.pre('save', function(next) {
@@ -74,6 +77,7 @@ userSchema.pre('save', function(next) {
       });
   });
 });
+
 
 userSchema.methods.comparePassword = async function(candidatePassword: string) {
   return await bcrypt.compare(candidatePassword, this.password);
