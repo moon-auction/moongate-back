@@ -11,6 +11,17 @@ dotenv.config();
 const app = express();
 const db = require('./config/db');
 
+declare module 'express-session' {
+  interface SessionData {
+  isLogin: Boolean;
+  email: string;
+  _id: string;
+  name: string;
+  verifiedInfo: any;
+  role: string;
+  level: number;
+}}
+
 app.use(session({
   secret: process.env.SECRETSESSION ? process.env.SECRETSESSION : 'moongate',
   resave: false,
