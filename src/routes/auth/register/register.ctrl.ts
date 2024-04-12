@@ -19,7 +19,7 @@ export const getConfirmCode: RequestHandler = async (req: Request, res: Response
             randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
         }
 
-        await Confirm.create({code: randomNumber, server: "", name: ""});
+        await Confirm.create({code: randomNumber, server: "", name: "미정"});
 
         return res.send({code: randomNumber});
     } catch (e) {
@@ -29,7 +29,10 @@ export const getConfirmCode: RequestHandler = async (req: Request, res: Response
 
 export const validateConfirmCode: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const {code, url} = req.body;
+        const {
+            code,
+            url
+        } = req.body;
 
         if (!code || !url) {
             return res.status(400).send({message: 'Invalid request'});
@@ -76,7 +79,7 @@ export const validateConfirmCode: RequestHandler = async (req: Request, res: Res
 
         await Confirm.updateOne({code: code}, {server: server, name: name, url: "https://mabinogi.nexon.com/page/community/free_view.asp?id="+ url +"&category=0"});
         
-        return res.send();
+        return res.send({message: "Valid code"});
 
     } catch (e) {
         next(e);
@@ -85,7 +88,7 @@ export const validateConfirmCode: RequestHandler = async (req: Request, res: Res
 
 export const confirmDelete: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const {code} = req.body;
+        const code = Number(req.params.code);
         
         if (!code) {
             return res.status(400).send({message: 'Invalid request'});
@@ -101,34 +104,49 @@ export const confirmDelete: RequestHandler = async (req: Request, res: Response,
             return res.status(400).send({message: 'Invalid confirm code'});
         }
 
+        var status = 0;
+        
         // Get Mabinogi Site Post
         const response = await axios({
             url: confirmed.url,
             method: 'GET',
-            responseType: 'arraybuffer'
-        })
+            responseType: 'arraybuffer',
+        }).then((response) => {
+            status = response.status;
+            return iconv.decode(response.data, 'EUC-KR').toString();
+        });
+
+        const $ = cheerio.load(response);
+        const scriptContent = $('script').text();
+        const includesScript = scriptContent.includes("alert('게시물을 찾을 수 없습니다.');history.go(-1);");
+
 
         // if return code is 401 consider it as deleted
-        if (response.status === 401) {
+        if (includesScript) {
             await Confirm.updateOne({code: code}, {deleted: true});
             return res.send();
         } else {
             return res.status(400).send({message: 'Not deleted yet'});
         }
 
+
     } catch(e) {
+        console.log(e)
         next(e);
     }
 }
 
 export const registerUser: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const {email, password, confirm} = req.body;
+        const {
+            email,
+            password,
+            confirm
+        } = req.body;
 
         if (!email || !password || !confirm) {
             return res.status(400).send({message: 'Invalid request'});
         }
-
 
         const confirmed = await Confirm.findOne({code: confirm});
 
@@ -147,6 +165,7 @@ export const registerUser: RequestHandler = async (req: Request, res: Response, 
         await User.create({
             email,
             password: password,
+            name: "이용자",
             verifiedInfo: {
                 server: confirmed.server,
                 character: confirmed.name

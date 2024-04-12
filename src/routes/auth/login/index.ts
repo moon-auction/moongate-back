@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { login } from './login.ctrl';
+import { login, userInfo } from './login.ctrl';
 
 const router = Router();
 
@@ -9,6 +9,7 @@ const router = Router();
  *   post:
  *     summary: Returns user info and session.
  *     description: Just as it is.
+ *     tags: [Login]
  *     parameters:
  *      - name: email
  *        in: body
@@ -35,5 +36,7 @@ const router = Router();
  *                 type: string
  */
 router.post('/', login);
+
+router.get('/', userInfo);
 
 export default router;

@@ -22,14 +22,13 @@ export const login: RequestHandler = async (req: Request, res: Response, next: N
         if (!isMatch) {
             return res.status(401).json({ message: 'Password does not match' });
         } else {
-            session!.isLogin = true;
-            session!.email = found.email;
-            session!._id = found._id.toString();
-            session!.name = found.name;
-            session!.verifiedInfo = found.verifiedInfo;
-            session!.role = found.role;
-            session!.level = found.level;
-            session!.save();
+            req.session!.isLogin = true;
+            req.session!.email = found.email;
+            req.session!._id = found._id.toString();
+            req.session!.name = found.name;
+            req.session!.verifiedInfo = found.verifiedInfo;
+            req.session!.role = found.role;
+            req.session!.level = found.level;
 
             return res.status(200).json(
                 {
@@ -46,6 +45,31 @@ export const login: RequestHandler = async (req: Request, res: Response, next: N
             );
         }
 
+    } catch(e) {
+        return next(e);
+    }
+}
+
+export const userInfo: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        var session = req.session;
+
+        if (!session!.isLogin) {
+            return res.status(401).json({ message: 'Not logged in' });
+        }
+
+        return res.status(200).json(
+            {
+                user: {
+                    _id: session!._id,
+                    email: session!.email,
+                    name: session!.name,
+                    verifiedInfo: session!.verifiedInfo,
+                    role: session!.role,
+                    level: session!.level
+                }
+            }
+        );
     } catch(e) {
         return next(e);
     }

@@ -13,20 +13,23 @@ const db = require('./config/db');
 
 declare module 'express-session' {
   interface SessionData {
-  isLogin: Boolean;
-  email: string;
-  _id: string;
-  name: string;
-  verifiedInfo: any;
-  role: string;
-  level: number;
+    isLogin: Boolean;
+    email: string;
+    _id: string;
+    name: string;
+    verifiedInfo: any;
+    role: string;
+    level: number;
 }}
-
+app.use(cors({
+  origin:  "http://localhost:3000",
+  credentials: true
+}));
 app.use(session({
   secret: process.env.SECRETSESSION ? process.env.SECRETSESSION : 'moongate',
   resave: false,
   saveUninitialized: false,
-  cookie:{maxAge:(3.6e+6)*24},
+  cookie:{maxAge:(3.6e+6)*24, httpOnly: true, secure: false},
   store: MongoStore.create({
     mongoUrl: process.env.MONGO_URI
   })
@@ -34,7 +37,7 @@ app.use(session({
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(cors());
+
 app.use('/api', routes);
 app.use(swaggerConfig);
 

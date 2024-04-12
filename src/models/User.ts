@@ -48,6 +48,11 @@ const userSchema = new Schema({
     min: 1,
     max: 255,
   },
+  exp: {
+    type: Number,
+    required: true,
+    default: 0,
+  },
 }, {
   timestamps: true,
   methods: { 
@@ -104,6 +109,7 @@ const confirmSchema = new Schema({
   },
   name : {
     type: String,
+    required: true,
     default: "",
   },
   server: {
@@ -112,7 +118,6 @@ const confirmSchema = new Schema({
   },
   expireAt: {
     type: Date,
-    default: Date.now,
     expires: 300,
   },
 });
